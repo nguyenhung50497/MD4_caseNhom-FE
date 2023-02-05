@@ -539,8 +539,7 @@ function showMyPlaylist() {
                 Authorization: 'Bearer ' + token.token,
             },
             success: (data) => {
-                console.log(data);
-                let html = `
+            let html = `
             <section class="trending-podcast-section section-padding" style="margin-top: -50px;">
                 <div class="container">
                     <div class="row">
@@ -555,7 +554,7 @@ function showMyPlaylist() {
                         <div class="col-lg-4 col-12 mt-4 mb-lg-0">
                             <div class="custom-block custom-block-full">
                                 <div class="custom-block-image-wrap">
-                                    <a class="btn" onclick="showPlaylistDetail(${item.idAlbum})">
+                                    <a class="btn" onclick="showPlaylistDetail(${item.idPlaylist})">
                                         <img src="${item.imagePlaylist}" class="custom-block-image img-fluid"
                                             alt="${item.imagePlaylist}">
                                     </a>
@@ -578,7 +577,7 @@ function showMyPlaylist() {
 
                                     <div class="custom-block-bottom d-flex justify-content-between mt-3">
                                         <a href="#" class="bi-headphones me-1">
-                                            <span></span>
+                                            <span>${item.countSongPlaylist}</span>
                                         </a>
                                     </div>
                                 </div>
@@ -605,50 +604,17 @@ function showMyPlaylist() {
         })
 }
 
-function showFormAddPlaylist() {
+function showPlaylistDetail(idPlaylist) {
     let token = JSON.parse(localStorage.getItem('token'));
-    $.ajax({
-        type: "GET",
-        url: 'http://localhost:3000/playlists',
-        headers : {
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + token.token,
-        },
-        success: (data) => {
-            let html = `
-                <div class="container-fluid">
-                    <div class="input-group flex-nowrap">
-                        <span class="input-group-text" id="addon-wrapping">Name Playlist</span>
-                        <input type="text" class="form-control" id="namePlaylist" placeholder="Name playlist" aria-label="Username" aria-describedby="addon-wrapping">
-                    </div>
-                    <br>
-                    <div class="input-group flex-nowrap">
-                        <span class="input-group-text" id="addon-wrapping">Image Playlist</span>
-                        <input type="file" id="fileButton" onchange="uploadImage(event)" class="form-control" placeholder="Image" aria-label="Username" aria-describedby="addon-wrapping">
-                    </div>
-                    <div id="imgDiv"></div>
-                    <br>
-                    <button class="btn btn-primary" onclick="addPlaylist()">Save</button>
-                </div>`;
-            $('#body').html(html);
-        }
-    })
-}
-
-function showAllSong() {
-    let token = JSON.parse(localStorage.getItem('token'));
-    $.ajax({
-        type: "GET",
-        url: 'http://localhost:3000/songs',
-        headers : {
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + token.token,
-        },
-        success: (data) => {
-                let categories = ``;
-                data[1].map((item) => {
-                    categories += `<option value="${item.idCategory}">${item.nameCategory}</option>`
-                })
+        $.ajax({
+            type: "GET",
+            url: `http://localhost:3000/playlistDetails/my-playlist-detail/${idPlaylist}`,
+            headers : {
+                'Content-Type': 'application/json',
+                Authorization: 'Bearer ' + token.token,
+            },
+            success: (data) => {
+                console.log(data);
                 let html = `
                 <section class="latest-podcast-section section-padding pb-0" id="section_2">
                     <div class="container">
@@ -656,10 +622,10 @@ function showAllSong() {
 
                             <center class="col-lg-12 col-12">
                                 <div class="section-title-wrap">
-                                    <h4 class="section-title">${data[0][0].nameAlbum}</h4>
+                                    <h4 class="section-title">${data[0].namePlaylist}</h4>
                                 </div>
                             </center>`
-                data[0].map((item) => {
+                data.map((item) => {
                     html += `<div class="col-lg-6 col-12 mt-4 mb-lg-0">
                                 <div class="custom-block d-flex">
                                     <div class="">
@@ -722,6 +688,160 @@ function showAllSong() {
                     </div>
                 </section>`;
                 $('#body').html(html);
+            }
+        })
+}
+
+function showFormAddPlaylist() {
+    let token = JSON.parse(localStorage.getItem('token'));
+    $.ajax({
+        type: "GET",
+        url: 'http://localhost:3000/playlists',
+        headers : {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + token.token,
+        },
+        success: (data) => {
+            let html = `
+                <div class="container-fluid">
+                    <div class="input-group flex-nowrap">
+                        <span class="input-group-text" id="addon-wrapping">Name Playlist</span>
+                        <input type="text" class="form-control" id="namePlaylist" placeholder="Name playlist" aria-label="Username" aria-describedby="addon-wrapping">
+                    </div>
+                    <br>
+                    <div class="input-group flex-nowrap">
+                        <span class="input-group-text" id="addon-wrapping">Image Playlist</span>
+                        <input type="file" id="fileButton" onchange="uploadImage(event)" class="form-control" placeholder="Image" aria-label="Username" aria-describedby="addon-wrapping">
+                    </div>
+                    <div id="imgDiv"></div>
+                    <br>
+                    <button class="btn btn-primary" onclick="addPlaylist()">Save</button>
+                </div>`;
+            $('#body').html(html);
+        }
+    })
+}
+
+function showAllSong() {
+    let token = JSON.parse(localStorage.getItem('token'));
+    $.ajax({
+        type: "GET",
+        url: 'http://localhost:3000/songs',
+        headers : {
+            'Content-Type': 'application/json',
+        },
+        success: (data) => {
+                let addSongToPlaylist = ``;
+                let categories = ``;
+                data[1].map((item) => {
+                    categories += `<option value="${item.idCategory}">${item.nameCategory}</option>`
+                })
+                let playlists = ``;
+                data[2].map((item) => {
+                    playlists += `<option value="${item.idPlaylist}">${item.namePlaylist}</option>`
+                })
+                let html = `
+                <section class="latest-podcast-section section-padding pb-0" id="section_2">
+                    <div class="container">
+                        <div class="row justify-content-center">
+
+                            <center class="col-lg-12 col-12">
+                                <div class="section-title-wrap">
+                                    <h4 class="section-title">${data[0][0].nameAlbum}</h4>
+                                </div>
+                            </center>`
+                data[0].map((item) => {
+                    if (token) {
+                        addSongToPlaylist = `
+                        <div class="d-flex flex-column ms-auto">
+                            <button class="badge ms-auto btn" data-bs-toggle="modal" data-bs-target="#addToPlaylistModal${item.idSong}">
+                                <i class="bi-heart"></i>
+                            </button>
+                        </div>`
+                    }
+                    html += `<div class="col-lg-6 col-12 mt-4 mb-lg-0">
+                                <div class="custom-block d-flex">
+                                    <div class="">
+                                        <div class="custom-block-icon-wrap" style="width: 120px; height: 150px;">
+                                            <div class="section-overlay"></div>
+                                            <a class="custom-block-image-wrap btn">
+                                                <img src="${item.image}" style="width: 100%; height: 100%;" alt="${item.image}">
+
+                                                <a class="custom-block-icon btn">
+                                                    <i class="bi-play-fill"></i>
+                                                </a>
+                                            </a>
+                                        </div>
+
+                                        <center class="mt-2">
+                                            <a class="btn custom-btn">
+                                                Play
+                                            </a>
+                                        </center>
+                                    </div>
+
+                                    <div class="custom-block-info">
+                                        <div class="custom-block-top d-flex mb-1">
+                                            <small class="me-4 text-primary">
+                                                <i class="bi-clock-fill custom-icon"></i>
+                                                ${item.nameCategory} <span class="badge">${item.idCategory}</span>
+                                            </small>
+                                        </div>
+
+                                        <h5 class="mb-2">
+                                            <a>
+                                                ${item.nameSong}
+                                            </a>
+                                        </h5>
+
+                                        <div class="profile-block d-flex">
+                                            <img src="${item.avatar}" alt="${item.avatar}" style="width: 50px; height: 50px; border-radius: 50%;">
+
+                                            <p class="ms-3">
+                                                ${item.author}
+                                                <img src="images/verified.png" class="verified-image img-fluid" alt="">
+                                                <strong>${item.singer}</strong>
+                                            </p>
+                                        </div>
+
+                                        <p class="mb-0">Added by ${item.username}</p>
+
+                                        <div class="custom-block-bottom d-flex justify-content-between mt-3">
+                                            <a href="#" class="bi-headphones me-2">
+                                                <span>${item.count}</span>
+                                            </a>
+                                        </div>
+
+                                    </div>
+                                    ${addSongToPlaylist}
+                                </div>
+                            </div>
+                            <div class="modal fade" id="addToPlaylistModal${item.idSong}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Select playlist to add song ${item.nameSong}</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <select id="idPlaylist" class="form-select" aria-label="Default select example">
+                                            ${playlists}
+                                        </select>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="addToPlaylist(${item.idSong})">Add</button>
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
+                            `
+                });
+
+                html +=`</div>
+                    </div>
+                </section>`;
+                $('#body').html(html);
         }
     });
 }
@@ -739,6 +859,10 @@ function showMySong() {
                 let categories = ``;
                 data[1].map((item) => {
                     categories += `<option value="${item.idCategory}">${item.nameCategory}</option>`
+                })
+                let playlists = ``;
+                data[2].map((item) => {
+                    playlists += `<option value="${item.idPlaylist}">${item.namePlaylist}</option>`
                 })
                 let html = `
                 <section class="latest-podcast-section section-padding pb-0" id="section_2">
@@ -839,15 +963,12 @@ function showMySong() {
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                     <div class="modal-header">
-                                        <h1 class="modal-title fs-5" id="exampleModalLabel">${item.nameSong}</h1>
+                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Select playlist to add song ${item.nameSong}</h1>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
                                         <select id="idPlaylist" class="form-select" aria-label="Default select example">
-                                            <option selected>Open this select menu</option>
-                                            <option value="1">One</option>
-                                            <option value="2">Two</option>
-                                            <option value="3">Three</option>
+                                            ${playlists}
                                         </select>
                                     </div>
                                     <div class="modal-footer">
@@ -918,6 +1039,27 @@ function showMySong() {
                 $('#body').html(html);
         }
     });
+}
+
+function addToPlaylist(idSong) {
+    let token = JSON.parse(localStorage.getItem('token'));
+    let idPlaylist = $('#idPlaylist').val();
+    let playlistDetail = {
+        idPlaylist: idPlaylist,
+        idSong: idSong
+    }
+    $.ajax({
+        type: "POST",
+        url: 'http://localhost:3000/playlistDetails',
+        data: JSON.stringify(playlistDetail),
+        headers : {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + token.token,
+        },
+        success: () => {
+            alert('Add song to playlist successfully');
+        }
+    })
 }
 
 function addPlaylist() {

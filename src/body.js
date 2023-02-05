@@ -39,6 +39,9 @@ function showBody() {
                             <li class="nav-item ms-2">
                                 <a class="active btn custom-btn custom-border-btn smoothscroll" onclick="showHome()">Home</a>
                             </li>
+                            <li class="nav-item ms-2">
+                                <a class="active btn custom-btn custom-border-btn smoothscroll" onclick="showAllSong()">All Song</a>
+                            </li>
                         </ul>
 
                         <div class="ms-2">
