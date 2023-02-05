@@ -164,43 +164,188 @@ function showMyAlbum() {
             Authorization: 'Bearer ' + token.token,
         },
         success: (data) => {
-            let html = ``
+            let html = `
+            <section class="trending-podcast-section section-padding">
+                <div class="container">
+                    <div class="row">
+
+                        <div class="col-lg-12 col-12">
+                            <div class="section-title-wrap mb-4">
+                                <h4 class="section-title">My album</h4>
+                            </div>
+                        </div>`;
             data.map((item) => {
-                html += ` 
-                <div class="container-fluid">
-                    <div class="input-group flex-nowrap">
-                        <h1>${item.nameAlbum}</h1>
-                    </div>
-                    <br>
-                    <button class="btn btn-primary" onclick="showAlbumDetail(${item.idAlbum})">Detail</button>
-                </div>
+                html += `
+                        <div class="col-lg-4 col-12 mb-4 mb-lg-0">
+                            <div class="custom-block custom-block-full">
+                                <div class="custom-block-image-wrap">
+                                    <a class="btn" onclick="showAlbumDetail(${item.idAlbum})">
+                                        <img src="${item.imageAlbum}" class="custom-block-image img-fluid"
+                                            alt="${item.imageAlbum}">
+                                    </a>
+                                </div>
+
+                                <div class="custom-block-info">
+                                    <h5 class="mb-2">
+                                        <a class="btn btn-outline-none text-primary" onclick="showAlbumDetail(${item.idAlbum})">
+                                            ${item.nameAlbum}
+                                        </a>
+                                        <a class="btn custom-btn" onclick="showFormAddSong()">
+                                            Add Song
+                                        </a>
+                                    </h5>
+
+                                    <div class="profile-block d-flex">
+                                        <img src="${item.avatar}" alt="">
+                                        <p>
+                                            <strong>${item.username}</strong>
+                                        </p>
+                                    </div>
+
+                                    <p class="mb-0">Let's listen to music</p>
+
+                                    <div class="custom-block-bottom d-flex justify-content-between mt-3">
+                                        <a href="#" class="bi-headphones me-1">
+                                            <span>100k</span>
+                                        </a>
+
+                                        <a href="#" class="bi-heart me-1">
+                                            <span>2.5k</span>
+                                        </a>
+
+                                        <a href="#" class="bi-chat me-1">
+                                            <span>924k</span>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="social-share d-flex flex-column ms-auto">
+                                    <a class="badge ms-auto btn" onclick="showFormAddSong()">
+                                        <i class="bi-plus"></i>
+                                    </a>
+
+                                    <a class="badge ms-auto btn" onclick="showFormEditAlbum()">
+                                        <i class="bi-bookmark"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                 `;
             })
+            html += `</div>
+                </div>
+            </section>`;
             
             $('#body').html(html);
         }
     })
 }
 
-function showAlbumDetail() {
+function showAlbumDetail(idAlbum) {
     let token = JSON.parse(localStorage.getItem('token'));
     $.ajax({
         type: "GET",
-        url: `http://localhost:3000/albums/`,
+        url: `http://localhost:3000/albums/detail/${idAlbum}`,
         headers : {
             'Content-Type': 'application/json',
             Authorization: 'Bearer ' + token.token,
         },
         success: (data) => {
             let html = `
-                <div class="container-fluid">
-                    <div class="input-group flex-nowrap">
-                        <span class="input-group-text" id="addon-wrapping">Name album</span>
-                        <input type="text" class="form-control" id="nameAlbum" placeholder="Name album" aria-label="Username" aria-describedby="addon-wrapping">
-                    </div>
-                    <br>
-                    <button class="btn btn-primary" onclick="addAlbum()">Save</button>
-                </div>`;
+            <section class="latest-podcast-section section-padding pb-0" id="section_2">
+                <div class="container">
+                    <div class="row justify-content-center">
+
+                        <div class="col-lg-12 col-12">
+                            <div class="section-title-wrap mb-5">
+                                <h4 class="section-title">${data[0].nameAlbum}</h4>
+                            </div>
+                        </div>`
+            data.map((item) => {
+                html += `<div class="col-lg-6 col-12 mb-4 mb-lg-0">
+                            <div class="custom-block d-flex">
+                                <div class="">
+                                    <div class="custom-block-icon-wrap">
+                                        <div class="section-overlay"></div>
+                                        <a class="custom-block-image-wrap btn">
+                                            <img src="${item.image}" alt="${item.image}">
+
+                                            <a class="custom-block-icon btn">
+                                                <i class="bi-play-fill"></i>
+                                            </a>
+                                        </a>
+                                    </div>
+
+                                    <div class="mt-2">
+                                        <a class="btn custom-btn">
+                                            Play
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="custom-block-info">
+                                    <div class="custom-block-top d-flex mb-1">
+                                        <small class="me-4">
+                                            <i class="bi-clock-fill custom-icon"></i>
+                                            50 Minutes
+                                        </small>
+
+                                        <small>Episode <span class="badge">15</span></small>
+                                    </div>
+
+                                    <h5 class="mb-2">
+                                        <a>
+                                            ${item.nameSong}
+                                        </a>
+                                    </h5>
+
+                                    <div class="profile-block d-flex">
+                                        <img src="${item.avatar}" alt="${item.avatar}">
+
+                                        <p>
+                                            ${item.username}
+                                            <img src="images/verified.png" class="verified-image img-fluid" alt="">
+                                            <strong>User</strong>
+                                        </p>
+                                    </div>
+
+                                    <p class="mb-0">Thanks for listen</p>
+
+                                    <div class="custom-block-bottom d-flex justify-content-between mt-3">
+                                        <a href="#" class="bi-headphones me-1">
+                                            <span>120k</span>
+                                        </a>
+
+                                        <a href="#" class="bi-heart me-1">
+                                            <span>42.5k</span>
+                                        </a>
+
+                                        <a href="#" class="bi-chat me-1">
+                                            <span>11k</span>
+                                        </a>
+
+                                        <a href="#" class="bi-download">
+                                            <span>50k</span>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex flex-column ms-auto">
+                                    <a href="#" class="badge ms-auto">
+                                        <i class="bi-heart"></i>
+                                    </a>
+
+                                    <a href="#" class="badge ms-auto">
+                                        <i class="bi-bookmark"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>`
+            });
+
+            html +=`</div>
+                </div>
+            </section>`;
             $('#body').html(html);
         }
     })
@@ -223,6 +368,12 @@ function showFormAddAlbum() {
                         <input type="text" class="form-control" id="nameAlbum" placeholder="Name album" aria-label="Username" aria-describedby="addon-wrapping">
                     </div>
                     <br>
+                    <div class="input-group flex-nowrap">
+                        <span class="input-group-text" id="addon-wrapping">Image Album</span>
+                        <input type="file" id="fileButton" onchange="uploadImage(event)" class="form-control" placeholder="Image" aria-label="Username" aria-describedby="addon-wrapping">
+                    </div>
+                    <div id="imgDiv"></div>
+                    <br>
                     <button class="btn btn-primary" onclick="addAlbum()">Save</button>
                 </div>`;
             $('#body').html(html);
@@ -233,10 +384,13 @@ function showFormAddAlbum() {
 function addAlbum() {
     let token = JSON.parse(localStorage.getItem('token'));
     let nameAlbum = $('#nameAlbum').val();
+    let imageAlbum = localStorage.getItem('image');
     let album = {
         nameAlbum: nameAlbum,
-        idUser: token.idUser
+        idUser: token.idUser,
+        imageAlbum: imageAlbum
     }
+    console.log(album);
     $.ajax({
         type: "POST",
         url: 'http://localhost:3000/albums',
