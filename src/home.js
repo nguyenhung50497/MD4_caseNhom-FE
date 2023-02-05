@@ -3,146 +3,72 @@ function showList() {
     let token = JSON.parse(localStorage.getItem('token'));
     $.ajax({
         type: "GET",
-        url: 'http://localhost:3000/products',
+        url: 'http://localhost:3000/albums',
         headers : {
             'Content-Type': 'application/json',
             Authorization: 'Bearer ' + token.token,
         },
         success: (data) => {
-            let html = ``;
-            let categories = ``;
-            data[1].map((item) => {
-                categories += `<option value="${item.idCategory}">${item.nameCategory}</option>`
-            })
-            data[0].map((item) => {
+            let html = `
+            <section class="trending-podcast-section section-padding">
+                <div class="container">
+                    <div class="row">
+
+                        <div class="col-lg-12 col-12">
+                            <div class="section-title-wrap mb-4">
+                                <h4 class="section-title">Album</h4>
+                            </div>
+                        </div>`;
+            data.map((item) => {
                 html += `
-                        <div class="col-lg-3 mb-3">
-                            <div class="card" style="width: 18rem;">
-                                <img src="${item.image}" class="card-img-top" alt="${item.image}" style="height: 300px;">
-                                <div class="card-body">
-                                    <h5 class="card-title">${item.name}</h5>
-                                    <p class="card-text"><strong>Price:</strong> ${item.price} $</p>
-                                    <p class="card-text"><strong>Category:</strong> ${item.nameCategory}</p>
-                    `;
-                if (token.role === 'admin') {
-                    html += `
-                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editModal${item.id}">Edit</button>
-                            <div class="modal fade" id="editModal${item.id}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                <div class="modal-dialog modal-lg">
-                                    <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Edit ${item.name}</h1>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <div class="col-lg-4 col-12 mb-4 mb-lg-0">
+                            <div class="custom-block custom-block-full">
+                                <div class="custom-block-image-wrap">
+                                    <a class="btn" onclick="showAlbumDetail(${item.idAlbum})">
+                                        <img src="${item.imageAlbum}" class="custom-block-image img-fluid"
+                                            alt="${item.imageAlbum}">
+                                    </a>
+                                </div>
+
+                                <div class="custom-block-info">
+                                    <h5 class="mb-2">
+                                        <a class="btn btn-outline-none text-primary" onclick="showAlbumDetail(${item.idAlbum})">
+                                            ${item.nameAlbum}
+                                        </a>
+                                    </h5>
+
+                                    <div class="profile-block d-flex">
+                                        <img src="${item.avatar}" alt="">
+                                        <p class="ms-3">
+                                            <strong>${item.username}</strong>
+                                        </p>
                                     </div>
-                                    <div class="modal-body">
-                                        <div class="input-group flex-nowrap">
-                                            <span class="input-group-text" id="addon-wrapping">Name</span>
-                                            <input type="text" class="form-control" id="name${item.id}" value="${item.name}" aria-label="Username" aria-describedby="addon-wrapping">
-                                        </div>
-                                        <br>
-                                        <div class="input-group flex-nowrap">
-                                            <span class="input-group-text" id="addon-wrapping">Price ($)</span>
-                                            <input type="text" class="form-control" id="price${item.id}" value="${item.price}" aria-label="Username" aria-describedby="addon-wrapping">
-                                        </div>
-                                        <br>
-                                        <div class="input-group flex-nowrap">
-                                            <span class="input-group-text" id="addon-wrapping">Category</span>
-                                            <select id="category${item.id}" class="form-select" aria-label="Default select example" aria-describedby="addon-wrapping">
-                                                <option value="${item.idCategory}">${item.nameCategory}</option>
-                                                ${categories}
-                                            </select>
-                                        </div>
-                                        <br>
-                                        <div class="input-group flex-nowrap">
-                                            <span class="input-group-text" id="addon-wrapping">Image</span>
-                                            <input type="file" id="fileButton" onchange="uploadImageEdit(event, ${item.id})" class="form-control" placeholder="Image" aria-label="Username" aria-describedby="addon-wrapping">
-                                        </div>
-                                        <br>
-                                        <div class="input-group flex-nowrap">
-                                            <span class="input-group-text" id="addon-wrapping">@</span>
-                                            <div class="container-fluid" id="imgDiv${item.id}" aria-describedby="addon-wrapping"><img src="${item.image}" alt="${item.image}" style="width: 500px;"></div>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="editProduct(${item.id})">Save changes</button>
-                                    </div>
+
+                                    <p class="mb-0">Let's listen to music</p>
+
+                                    <div class="custom-block-bottom d-flex justify-content-between mt-3">
+                                        <a href="#" class="bi-headphones me-1">
+                                            <span>${item.countSong}</span>
+                                        </a>
                                     </div>
                                 </div>
-                            </div>
-                            <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal${item.id}">Delete</button>
-                            <div class="modal fade" id="deleteModal${item.id}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                <div class="modal-header">
-                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Delete ${item.name}</h1>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    Are you sure you want to delete???
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="deleteProduct(${item.id})">Yes</button>
-                                </div>
-                                </div>
-                            </div>
-                            </div>
-                            </div>
-                        </div>
-                    </div>`;
-                }
-                else {
-                    html += `
-                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#buyModal${item.id}">Buy</button>
-                        <div class="modal fade" id="buyModal${item.id}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-lg">
-                                <div class="modal-content">
-                                <div class="modal-header">
-                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Buy ${item.name}</h1>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="input-group flex-nowrap">
-                                        <span class="input-group-text" id="addon-wrapping">Name</span>
-                                        <input type="text" class="form-control" id="name${item.id}" value="${item.name}" aria-label="Username" aria-describedby="addon-wrapping">
-                                    </div>
-                                    <br>
-                                    <div class="input-group flex-nowrap">
-                                        <span class="input-group-text" id="addon-wrapping">Price ($)</span>
-                                        <input type="text" class="form-control" id="price${item.id}" value="${item.price}" aria-label="Username" aria-describedby="addon-wrapping">
-                                    </div>
-                                    <br>
-                                    <div class="input-group flex-nowrap">
-                                        <span class="input-group-text" id="addon-wrapping">Category</span>
-                                        <select id="category${item.id}" class="form-select" aria-label="Default select example" aria-describedby="addon-wrapping">
-                                            <option value="${item.idCategory}">${item.nameCategory}</option>
-                                            ${categories}
-                                        </select>
-                                    </div>
-                                    <br>
-                                    <div class="input-group flex-nowrap">
-                                        <span class="input-group-text" id="addon-wrapping">Image</span>
-                                        <input type="file" id="fileButton" onchange="uploadImageEdit(event, ${item.id})" class="form-control" placeholder="Image" aria-label="Username" aria-describedby="addon-wrapping">
-                                    </div>
-                                    <br>
-                                    <div class="input-group flex-nowrap">
-                                        <span class="input-group-text" id="addon-wrapping">@</span>
-                                        <div class="container-fluid" id="imgDiv${item.id}" aria-describedby="addon-wrapping"><img src="${item.image}" alt="${item.image}" style="width: 500px;"></div>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="buyProduct(${item.id})">Confirm</button>
-                                </div>
+
+                                <div class="social-share d-flex flex-column ms-auto">
+                                    <a class="badge ms-auto btn" onclick="showFormAddSong(${item.idAlbum})">
+                                        <i class="bi-plus"></i>
+                                    </a>
+
+                                    <a class="badge ms-auto btn" onclick="showFormEditAlbum(${item.idAlbum})">
+                                        <i class="bi-bookmark"></i>
+                                    </a>
                                 </div>
                             </div>
                         </div>
-                        </div>
-                    </div>
-                    </div>`;
-                }
-            });
+                `;
+            })
+            html += `</div>
+                </div>
+            </section>`;
             $('#body').html(html);
         }
     })
@@ -190,14 +116,11 @@ function showMyAlbum() {
                                         <a class="btn btn-outline-none text-primary" onclick="showAlbumDetail(${item.idAlbum})">
                                             ${item.nameAlbum}
                                         </a>
-                                        <a class="btn custom-btn" onclick="showFormAddSong()">
-                                            Add Song
-                                        </a>
                                     </h5>
 
                                     <div class="profile-block d-flex">
                                         <img src="${item.avatar}" alt="">
-                                        <p>
+                                        <p class="ms-3">
                                             <strong>${item.username}</strong>
                                         </p>
                                     </div>
@@ -206,25 +129,17 @@ function showMyAlbum() {
 
                                     <div class="custom-block-bottom d-flex justify-content-between mt-3">
                                         <a href="#" class="bi-headphones me-1">
-                                            <span>100k</span>
-                                        </a>
-
-                                        <a href="#" class="bi-heart me-1">
-                                            <span>2.5k</span>
-                                        </a>
-
-                                        <a href="#" class="bi-chat me-1">
-                                            <span>924k</span>
+                                            <span>${item.countSong}</span>
                                         </a>
                                     </div>
                                 </div>
 
                                 <div class="social-share d-flex flex-column ms-auto">
-                                    <a class="badge ms-auto btn" onclick="showFormAddSong()">
+                                    <a class="badge ms-auto btn" onclick="showFormAddSong(${item.idAlbum})">
                                         <i class="bi-plus"></i>
                                     </a>
 
-                                    <a class="badge ms-auto btn" onclick="showFormEditAlbum()">
+                                    <a class="badge ms-auto btn" onclick="showFormEditAlbum(${item.idAlbum})">
                                         <i class="bi-bookmark"></i>
                                     </a>
                                 </div>
@@ -268,7 +183,7 @@ function showAlbumDetail(idAlbum) {
                                     <div class="custom-block-icon-wrap">
                                         <div class="section-overlay"></div>
                                         <a class="custom-block-image-wrap btn">
-                                            <img src="${item.image}" alt="${item.image}">
+                                            <img src="${item.image}" style="width: 100px; height: 150px;" alt="${item.image}">
 
                                             <a class="custom-block-icon btn">
                                                 <i class="bi-play-fill"></i>
@@ -285,12 +200,10 @@ function showAlbumDetail(idAlbum) {
 
                                 <div class="custom-block-info">
                                     <div class="custom-block-top d-flex mb-1">
-                                        <small class="me-4">
+                                        <small class="me-4 text-primary">
                                             <i class="bi-clock-fill custom-icon"></i>
-                                            50 Minutes
+                                            ${item.nameCategory} <span class="badge">${item.idCategory}</span>
                                         </small>
-
-                                        <small>Episode <span class="badge">15</span></small>
                                     </div>
 
                                     <h5 class="mb-2">
@@ -302,40 +215,28 @@ function showAlbumDetail(idAlbum) {
                                     <div class="profile-block d-flex">
                                         <img src="${item.avatar}" alt="${item.avatar}">
 
-                                        <p>
-                                            ${item.username}
+                                        <p class="ms-3">
+                                            ${item.author}
                                             <img src="images/verified.png" class="verified-image img-fluid" alt="">
-                                            <strong>User</strong>
+                                            <strong>${item.singer}</strong>
                                         </p>
                                     </div>
 
-                                    <p class="mb-0">Thanks for listen</p>
+                                    <p class="mb-0">Added by ${item.username}</p>
 
                                     <div class="custom-block-bottom d-flex justify-content-between mt-3">
-                                        <a href="#" class="bi-headphones me-1">
-                                            <span>120k</span>
-                                        </a>
-
-                                        <a href="#" class="bi-heart me-1">
-                                            <span>42.5k</span>
-                                        </a>
-
-                                        <a href="#" class="bi-chat me-1">
-                                            <span>11k</span>
-                                        </a>
-
-                                        <a href="#" class="bi-download">
-                                            <span>50k</span>
+                                        <a href="#" class="bi-headphones me-2">
+                                            <span>${item.count}</span>
                                         </a>
                                     </div>
                                 </div>
 
                                 <div class="d-flex flex-column ms-auto">
-                                    <a href="#" class="badge ms-auto">
-                                        <i class="bi-heart"></i>
+                                    <a class="badge ms-auto btn">
+                                        <i class="bi-x"></i>
                                     </a>
 
-                                    <a href="#" class="badge ms-auto">
+                                    <a class="badge ms-auto btn">
                                         <i class="bi-bookmark"></i>
                                     </a>
                                 </div>
@@ -465,14 +366,14 @@ function showFormAddSong(idAlbum) {
 
 function addSong(idAlbum) {
     let token = JSON.parse(localStorage.getItem('token'));
-    let nameAlbum = $('#nameAlbum').val();
+    let nameSong = $('#nameSong').val();
     let singer = $('#singer').val();
     let author = $('#author').val();
     let idCategory = $('#category').val();
     let image = localStorage.getItem('image');
     let sound = localStorage.getItem('sound');
     let album = {
-        nameAlbum: nameAlbum,
+        nameSong: nameSong,
         singer: singer,
         author: author,
         idAlbum: idAlbum,
@@ -482,7 +383,7 @@ function addSong(idAlbum) {
     }
     $.ajax({
         type: "POST",
-        url: 'http://localhost:3000/songs',
+        url: `http://localhost:3000/songs`,
         data: JSON.stringify(album),
         headers : {
             'Content-Type': 'application/json',
@@ -490,7 +391,7 @@ function addSong(idAlbum) {
         },
         success: () => {
             alert('Song added successfully');
-            showHome();
+            showMyAlbum();
         }
     })
 }
