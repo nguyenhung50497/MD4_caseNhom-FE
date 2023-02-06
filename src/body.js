@@ -439,9 +439,9 @@ function showBody() {
                                 data-bs-toggle="dropdown" aria-expanded="false">${token.username}</a>
 
                             <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarLightDropdownMenuLink">
-                                <li><a class="dropdown-item btn" onclick="showMyProfile(${token.idUser})">Profile</a></li>
+                                <li><a class="dropdown-item btn" onclick="showMyProfile()">Profile</a></li>
                                 <li><a class="dropdown-item btn" data-bs-toggle="modal" data-bs-target="#editProfileModal${token.idUser}">Edit Profile</a></li>
-                                <li><a class="dropdown-item btn" onclick="showFormChangePassword()">Change Password</a></li>
+                                <li><a class="dropdown-item btn" data-bs-toggle="modal" data-bs-target="#changePasswordModal${token.idUser}">Change Password</a></li>
                             </ul>
                         </li>`
         } else {
@@ -477,11 +477,48 @@ function showBody() {
                         <input type="file" id="fileButton" onchange="uploadImageEdit(event, ${token.idUser})" class="form-control" placeholder="Image" aria-label="Username" aria-describedby="addon-wrapping">
                     </div>
                     <br>
-                    <div id="imgDiv${token.idUser}" class="container"><image src="${token.avatar}" style="width: 200px; border-radius: 5%; margin: auto;"></div>
+                    <div id="imgDiv${token.idUser}" class="container"><image src="${token.avatar}" style="width: 200px; border-radius: 5%;"></div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="editProfile(${token.idUser})">Save changes</button>
+                </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="changePasswordModal${token.idUser}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Change password</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group flex-nowrap">
+                        <span class="input-group-text" id="addon-wrapping">Old password</span>
+                        <input type="password" class="form-control" onkeyup="oldPassword(this.value)" id="oldPassword" placeholder="*****" aria-label="Username" aria-describedby="addon-wrapping">
+                    </div>
+                    <br>
+                    <div id="alertOldPassword"></div>
+                    <br>
+                    <div class="input-group flex-nowrap">
+                        <span class="input-group-text" id="addon-wrapping">New password</span>
+                        <input type="password" class="form-control" onkeyup="newPassword(this.value)" id="newPassword" placeholder="*****" aria-label="Username" aria-describedby="addon-wrapping">
+                    </div>
+                    <br>
+                    <div id="alertNewPassword"></div>
+                    <br>
+                    <div class="input-group flex-nowrap">
+                        <span class="input-group-text" id="addon-wrapping">Confirm new password</span>
+                        <input type="password" class="form-control" onkeyup="confirmPassword(this.value)" id="confirmPassword" placeholder="*****" aria-label="Username" aria-describedby="addon-wrapping">
+                    </div>
+                    <br>
+                    <div id="alertConfirmPassword"></div>
+                    <br>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="changePassword(${token.idUser})">Save changes</button>
                 </div>
                 </div>
             </div>

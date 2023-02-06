@@ -1265,7 +1265,7 @@ function editSong(idSong, idAlbum) {
             Authorization: 'Bearer ' + token.token,
         },
         success: (data) => {
-            alert('Edit product successfully');
+            alert('Edit song successfully');
             showAlbumDetail(data);
         }
     })
@@ -1366,13 +1366,13 @@ function deleteUser(idUser) {
     })
 }
 
-function showMyProfile(idUser) {
+function showMyProfile() {
     let token = JSON.parse(localStorage.getItem('token'));
     showMyAlbum();
     showMyPlaylist();
     $.ajax({
         type: "GET",
-        url: `http://localhost:3000/users/${idUser}`,
+        url: `http://localhost:3000/users/my-profile/${token.idUser}`,
         headers : {
             'Content-Type': 'application/json',
             Authorization: 'Bearer ' + token.token,
@@ -1424,7 +1424,117 @@ function showMyProfile(idUser) {
 }
 
 function editProfile(idUser) {
-    
+    let token = JSON.parse(localStorage.getItem('token'));
+    let username = $(`#username`).val();
+    let avatar = localStorage.getItem('image');
+    let password =``;
+    let album = {
+        username: username,
+        password: password,
+        avatar: avatar
+    }
+    $.ajax({
+        type: "PUT",
+        url: `http://localhost:3000/users/${idUser}`,
+        data: JSON.stringify(album),
+        headers : {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + token.token,
+        },
+        success: (data) => {
+            alert('Edit profile successfully');
+            showMyProfile(data);
+        }
+    })
+}
+
+function oldPassword(password) {
+    let token = JSON.parse(localStorage.getItem('token'));
+    let user = {
+        password: password
+    }
+    $.ajax({
+        type: "POST",
+        url: `http://localhost:3000/users/check-old-password/${token.idUser}`,
+        data: JSON.stringify(user),
+        headers : {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + token.token,
+        },
+        success: (data) => {
+            if (!data) {
+                $(`#alertOldPassword`).html(`
+                <div class="alert alert-danger" role="alert">
+                    Old password is wrong!
+                </div>`);
+            } else {
+                $(`#alertOldPassword`).html(``);
+            }
+        }
+    });
+}
+
+function newPassword(password) {
+    let token = JSON.parse(localStorage.getItem('token'));
+    let user = {
+        password: password
+    }
+    $.ajax({
+        type: "POST",
+        url: `http://localhost:3000/users/check-new-password/${token.idUser}`,
+        data: JSON.stringify(user),
+        headers : {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + token.token,
+        },
+        success: (data) => {
+            if (data) {
+                $(`#alertNewPassword`).html(`
+                <div class="alert alert-danger" role="alert">
+                    New password is the same as old password! Please try again!
+                </div>`);
+            } else {
+                $(`#alertNewPassword`).html(``);
+            }
+        }
+    });
+}
+
+function confirmPassword(password) {
+    let token = JSON.parse(localStorage.getItem('token'));
+    let newPassword = $('#newPassword').val();
+    let user = {
+        newPassword: newPassword,
+        confirmPassword: password
+    }
+    if (password !== newPassword ) {
+        $(`#alertConfirmPassword`).html(`
+        <div class="alert alert-danger" role="alert">
+            Confirm password doesn't match new password! Please try again!
+        </div>`);
+    } else {
+        $(`#alertConfirmPassword`).html(``);
+    }
+}
+
+function changePassword(idUser) {
+    let token = JSON.parse(localStorage.getItem('token'));
+    let user = {
+        password: $('#newPassword').val(),
+    }
+    $.ajax({
+        type: "POST",
+        url: `http://localhost:3000/users/change-password/${idUser}`,
+        data: JSON.stringify(user),
+        headers : {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + token.token,
+        },
+        success: (data) => {
+            alert('Change password successfully');
+        }
+    });
+
 }
 
 function uploadImage(e) {
@@ -1453,7 +1563,7 @@ function uploadImage(e) {
             }
         }, function () {
             let downloadURL = uploadTask.snapshot.downloadURL;
-            document.getElementById('imgDiv').innerHTML = `<img src="${downloadURL}" alt="${downloadURL}"  style="width: 100px; border-radius: 5%;">`
+            document.getElementById('imgDiv').innerHTML = `<img src="${downloadURL}" alt="${downloadURL}"  style="width: 200px; border-radius: 5%;">`
             localStorage.setItem('image', downloadURL);
         });
 }
@@ -1515,7 +1625,7 @@ function uploadImageEdit(e, id) {
             }
         }, function () {
             let downloadURL = uploadTask.snapshot.downloadURL;
-            document.getElementById(`imgDiv${id}`).innerHTML = `<img src="${downloadURL}" alt="${downloadURL}"  style="width: 100px; border-radius: 5%;">`;
+            document.getElementById(`imgDiv${id}`).innerHTML = `<img src="${downloadURL}" alt="${downloadURL}"  style="width: 200px; border-radius: 5%;">`;
             localStorage.setItem('image', downloadURL);
         });
 }
