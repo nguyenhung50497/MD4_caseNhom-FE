@@ -20,7 +20,7 @@ function showBody() {
 
                     <form action="#" method="get" class="custom-form search-form flex-fill me-3" role="search">
                         <div class="input-group input-group-lg">
-                            <input name="search" type="search" class="form-control" id="search" placeholder="Search Podcast"
+                            <input name="search" type="search" onkeyup="searchSong(this.value)" class="form-control" id="search" placeholder="Search Podcast"
                                 aria-label="Search">
 
                             <button type="submit" class="form-control" id="submit">
@@ -70,6 +70,7 @@ function showBody() {
                 </div>
             </section>
 
+            <div class="container" id="searchSong"></div>
             <div class="container" id="body"></div>
 
             <section class="topics-section section-padding pb-0" id="section_3">
@@ -429,7 +430,7 @@ function showBody() {
                                 data-bs-toggle="dropdown" aria-expanded="false">Song</a>
 
                             <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarLightDropdownMenuLink">
-                                <li><a class="dropdown-item btn" onclick="showAllSong()">All Song</a></li>
+                                <li><a class="dropdown-item btn" onclick="showAllSongUser()">All Song</a></li>
                                 <li><a class="dropdown-item btn" onclick="showMySong()">My Song</a></li>
                             </ul>
                         </li>
@@ -449,7 +450,7 @@ function showBody() {
                             <a class="active btn custom-btn custom-border-btn smoothscroll" onclick="showUsers()">Users</a>
                         </li>
                         <li class="nav-item ms-2">
-                            <a class="active btn custom-btn custom-border-btn smoothscroll" onclick="showAllSong()">All Song</a>
+                            <a class="active btn custom-btn custom-border-btn smoothscroll" onclick="showAllSongUser()">All Song</a>
                         </li>`
         }
         let html = ``;
@@ -534,7 +535,7 @@ function showBody() {
                 <form action="#" method="get" class="custom-form search-form flex-fill me-3" role="search">
                     <div class="input-group input-group-lg">
                         <input name="search" type="search" class="form-control" id="search" placeholder="Search Podcast"
-                            aria-label="Search">
+                            aria-label="Search" onkeyup="searchSongByName(this.value)">
 
                         <button type="submit" class="form-control" id="submit">
                             <i class="bi-search"></i>
@@ -578,10 +579,10 @@ function showBody() {
             </div>
         </section>
         
-        <div class="container" id="search"></div>
+        <div class="container" id="searchSong"></div>
         <div class="container" id="showUsers"></div>
-        <div class="container" id="body"></div>
         <div class="container" id="playlist"></div>
+        <div class="container" id="body"></div>
 
         <section class="topics-section section-padding pb-0" id="section_3">
             <div class="container">
