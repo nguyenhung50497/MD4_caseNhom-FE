@@ -431,12 +431,25 @@ function showBody() {
                             <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarLightDropdownMenuLink">
                                 <li><a class="dropdown-item btn" onclick="showAllSong()">All Song</a></li>
                                 <li><a class="dropdown-item btn" onclick="showMySong()">My Song</a></li>
-                                <li><a class="dropdown-item btn" onclick="showFormAddSong()">Create Song</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item dropdown ms-2">
+                            <a class="dropdown-toggle btn custom-btn custom-border-btn smoothscroll" style="height: 45px;" id="navbarLightDropdownMenuLink" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">${token.username}</a>
+
+                            <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarLightDropdownMenuLink">
+                                <li><a class="dropdown-item btn" onclick="showMyProfile(${token.idUser})">Profile</a></li>
+                                <li><a class="dropdown-item btn" data-bs-toggle="modal" data-bs-target="#editProfileModal${token.idUser}">Edit Profile</a></li>
+                                <li><a class="dropdown-item btn" onclick="showFormChangePassword()">Change Password</a></li>
                             </ul>
                         </li>`
         } else {
             navbar += `<li class="nav-item ms-2">
                             <a class="active btn custom-btn custom-border-btn smoothscroll" onclick="showUsers()">Users</a>
+                        </li>
+                        <li class="nav-item ms-2">
+                            <a class="active btn custom-btn custom-border-btn smoothscroll" onclick="showAllSong()">All Song</a>
                         </li>`
         }
         let html = ``;
@@ -446,7 +459,33 @@ function showBody() {
                 background-color: rgb(200, 219, 219);
             }
         </style>
-
+        <div class="modal fade" id="editProfileModal${token.idUser}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Edit profile</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group flex-nowrap">
+                        <span class="input-group-text" id="addon-wrapping">Song's name</span>
+                        <input type="text" class="form-control" id="username" value="${token.username}" aria-label="Username" aria-describedby="addon-wrapping">
+                    </div>
+                    <br>
+                    <div class="input-group flex-nowrap">
+                        <span class="input-group-text" id="addon-wrapping">Image</span>
+                        <input type="file" id="fileButton" onchange="uploadImageEdit(event, ${token.idUser})" class="form-control" placeholder="Image" aria-label="Username" aria-describedby="addon-wrapping">
+                    </div>
+                    <br>
+                    <div id="imgDiv${token.idUser}" class="container"><image src="${token.avatar}" style="width: 200px; border-radius: 5%; margin: auto;"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="editProfile(${token.idUser})">Save changes</button>
+                </div>
+                </div>
+            </div>
+        </div>
         <main>
             
         <nav class="navbar navbar-expand-lg">
@@ -501,8 +540,11 @@ function showBody() {
                 </div>
             </div>
         </section>
-
+        
+        <div class="container" id="search"></div>
+        <div class="container" id="showUsers"></div>
         <div class="container" id="body"></div>
+        <div class="container" id="playlist"></div>
 
         <section class="topics-section section-padding pb-0" id="section_3">
             <div class="container">
