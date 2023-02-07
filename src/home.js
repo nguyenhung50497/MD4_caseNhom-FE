@@ -68,12 +68,18 @@ function showList() {
                             <div class="section-title-wrap">
                                 <h4 class="section-title">Top 4 song</h4>
                             </div>
+                            <div class="container">
+                                <audio id="my_audio" controls preload="none">
+                                    <source src="" type="audio/mp3">
+                                </audio>
+                            </div>
+                            <div class="container">
+                                <button class="btn btn-primary" onclick="play_audio('play')">PLAY</button>
+                                <button class="btn btn-danger" onclick="play_audio('stop')">STOP</button>
+                            </div>
                         </center>`
             data[1].map((item, index) => {
-                Object.defineProperty(playlistAudio, `${item.idSong}`, {
-                    configurable: false,
-                    value: `${item.sound}`
-                });
+                playlistAudio['song_'+item.idSong] = item.sound;
                 html += `<div class="col-lg-6 col-12 mt-4 mb-lg-0">
                             <div class="custom-block d-flex">
                                 <div class="">
@@ -136,15 +142,28 @@ function showList() {
 
             html +=`</div>
                 </div>
-            </section>`;
-            keys = Object.keys(playlistAudio);
-            $('#my_audio').append("<source id='sound_src' src=" + playlistAudio[keys[0]] + " type='audio/mp3'>");count = 0; 
-            $('.my_audio').on('ended', function() { 
-               count++;  
-               $("#sound_src").attr("src", playlistAudio[keys[count]])[0];
-               $(".my_audio").trigger('load');
-               play_audio('play');
-            });
+            </section>
+            <script> 
+                let playlistAudio = ${JSON.stringify(playlistAudio)};
+                $("#my_audio").trigger('load');
+                keys = Object.keys(playlistAudio);
+                $('#my_audio').append("<source id='sound_src' src=" + playlistAudio[keys[0]] + " type='audio/mp3'>");count = 0; 
+                $('#my_audio').on('ended', function() { 
+                    count++;  
+                    $("#sound_src").attr("src", playlistAudio[keys[count]])[0];
+                    $("#my_audio").trigger('load');
+                    play_audio('play');
+                });
+                function play_audio(task) {
+                    if(task == 'play'){
+                        $("#my_audio").trigger('play');
+                    }
+                    if(task == 'stop'){
+                        $("#my_audio").trigger('pause');
+                        $("#my_audio").prop("currentTime",0);
+                    }
+                }
+            </script>`;
             $('#body').html(html);
         }
     })
@@ -173,6 +192,7 @@ function showAlbumDetail(idAlbum) {
                 Authorization: 'Bearer ' + token.token,
             },
             success: (data) => {
+                let playlistAudio = {};
                 if (data[0].length > 0) {
                 let categories = ``;
                 data[1].map((item) => {
@@ -187,8 +207,18 @@ function showAlbumDetail(idAlbum) {
                                 <div class="section-title-wrap">
                                     <h4 class="section-title">${data[0][0].nameAlbum}</h4>
                                 </div>
+                                <div class="container">
+                                    <audio id="my_audio" controls preload="none">
+                                        <source src="" type="audio/mp3">
+                                    </audio>
+                                </div>
+                                <div class="container">
+                                    <button class="btn btn-primary" onclick="play_audio('play')">PLAY</button>
+                                    <button class="btn btn-danger" onclick="play_audio('stop')">STOP</button>
+                                </div>
                             </center>`
                 data[0].map((item) => {
+                    playlistAudio['song_'+item.idSong] = item.sound;
                     html += `<div class="col-lg-6 col-12 mt-4 mb-lg-0">
                                 <div class="custom-block d-flex">
                                     <div class="">
@@ -331,7 +361,28 @@ function showAlbumDetail(idAlbum) {
 
                 html +=`</div>
                     </div>
-                </section>`;
+                </section>
+                <script> 
+                    let playlistAudio = ${JSON.stringify(playlistAudio)};
+                    $("#my_audio").trigger('load');
+                    keys = Object.keys(playlistAudio);
+                    $('#my_audio').append("<source id='sound_src' src=" + playlistAudio[keys[0]] + " type='audio/mp3'>");count = 0; 
+                    $('#my_audio').on('ended', function() { 
+                        count++;  
+                        $("#sound_src").attr("src", playlistAudio[keys[count]])[0];
+                        $("#my_audio").trigger('load');
+                        play_audio('play');
+                    });
+                    function play_audio(task) {
+                        if(task == 'play'){
+                            $("#my_audio").trigger('play');
+                        }
+                        if(task == 'stop'){
+                            $("#my_audio").trigger('pause');
+                            $("#my_audio").prop("currentTime",0);
+                        }
+                    }
+                </script>`;
                 $('#body').html(html);
                 } else {
                     alert('Album have no song');
@@ -773,7 +824,6 @@ function showPlaylistDetail(idPlaylist) {
                                 </div>
                                 <div class="container">
                                     <button class="btn btn-primary" onclick="play_audio('play')">PLAY</button>
-                                    <button class="btn btn-primary" onclick="play_audio('next')">NEXT</button>
                                     <button class="btn btn-danger" onclick="play_audio('stop')">STOP</button>
                                 </div>
                             </center>`
@@ -839,13 +889,11 @@ function showPlaylistDetail(idPlaylist) {
                             </div>
                             `
                 });
-                console.log(playlistAudio);
-                const script = JSON.stringify(playlistAudio);
                 html +=`</div>
                     </div>
                 </section>
                 <script> 
-                    let playlistAudio = ${script};
+                    let playlistAudio = ${JSON.stringify(playlistAudio)};
                     $("#my_audio").trigger('load');
                     keys = Object.keys(playlistAudio);
                     $('#my_audio').append("<source id='sound_src' src=" + playlistAudio[keys[0]] + " type='audio/mp3'>");count = 0; 
@@ -859,9 +907,6 @@ function showPlaylistDetail(idPlaylist) {
                         if(task == 'play'){
                             $("#my_audio").trigger('play');
                         }
-                        if(task == 'play'){
-                            $("#my_audio").trigger('next');
-                        }
                         if(task == 'stop'){
                             $("#my_audio").trigger('pause');
                             $("#my_audio").prop("currentTime",0);
@@ -871,14 +916,6 @@ function showPlaylistDetail(idPlaylist) {
                 $('#body').html(html);
             }
         })
-}
-
-function objToString (obj) {
-    let str = '';
-    for (const [p, val] of Object.entries(obj)) {
-        str += `${p}::${val}\n`;
-    }
-    return str;
 }
 
 function showFormAddPlaylist() {
@@ -926,6 +963,7 @@ function showAllSong() {
             'Content-Type': 'application/json',
         },
         success: (data) => {
+            let playlistAudio = {};
                 let categories = ``;
                 data[1].map((item) => {
                     categories += `<option value="${item.idCategory}">${item.nameCategory}</option>`
@@ -939,8 +977,18 @@ function showAllSong() {
                                 <div class="section-title-wrap">
                                     <h4 class="section-title">All song</h4>
                                 </div>
+                                <div class="container">
+                                    <audio id="my_audio" controls preload="none">
+                                        <source src="" type="audio/mp3">
+                                    </audio>
+                                </div>
+                                <div class="container">
+                                    <button class="btn btn-primary" onclick="play_audio('play')">PLAY</button>
+                                    <button class="btn btn-danger" onclick="play_audio('stop')">STOP</button>
+                                </div>
                             </center>`
                 data[0].map((item) => {
+                    playlistAudio['song_'+item.idSong] = item.sound;
                     html += `<div class="col-lg-6 col-12 mt-4 mb-lg-0">
                                 <div class="custom-block d-flex">
                                     <div class="">
@@ -1008,7 +1056,28 @@ function showAllSong() {
 
                 html +=`</div>
                     </div>
-                </section>`;
+                </section>
+                <script> 
+                    let playlistAudio = ${JSON.stringify(playlistAudio)};
+                    $("#my_audio").trigger('load');
+                    keys = Object.keys(playlistAudio);
+                    $('#my_audio').append("<source id='sound_src' src=" + playlistAudio[keys[0]] + " type='audio/mp3'>");count = 0; 
+                    $('#my_audio').on('ended', function() { 
+                        count++;  
+                        $("#sound_src").attr("src", playlistAudio[keys[count]])[0];
+                        $("#my_audio").trigger('load');
+                        play_audio('play');
+                    });
+                    function play_audio(task) {
+                        if(task == 'play'){
+                            $("#my_audio").trigger('play');
+                        }
+                        if(task == 'stop'){
+                            $("#my_audio").trigger('pause');
+                            $("#my_audio").prop("currentTime",0);
+                        }
+                    }
+                </script>`;
                 $('#body').html(html);
         }
     });
@@ -1027,6 +1096,7 @@ function showAllSongUser() {
             Authorization: 'Bearer ' + token.token,
         },
         success: (data) => {
+            let playlistAudio = {};
                 let button = ``;
                 let categories = ``;
                 data[1].map((item) => {
@@ -1047,8 +1117,18 @@ function showAllSongUser() {
                                 <div class="section-title-wrap">
                                     <h4 class="section-title">All song</h4>
                                 </div>
+                                <div class="container">
+                                    <audio id="my_audio" controls preload="none">
+                                        <source src="" type="audio/mp3">
+                                    </audio>
+                                </div>
+                                <div class="container">
+                                    <button class="btn btn-primary" onclick="play_audio('play')">PLAY</button>
+                                    <button class="btn btn-danger" onclick="play_audio('stop')">STOP</button>
+                                </div>
                             </center>`
                 data[0].map((item) => {
+                    playlistAudio['song_'+item.idSong] = item.sound;
                     if (token) {
                         if (token.role === 'user') {
                             button = `
@@ -1170,7 +1250,28 @@ function showAllSongUser() {
 
                 html +=`</div>
                     </div>
-                </section>`;
+                </section>
+                <script> 
+                    let playlistAudio = ${JSON.stringify(playlistAudio)};
+                    $("#my_audio").trigger('load');
+                    keys = Object.keys(playlistAudio);
+                    $('#my_audio').append("<source id='sound_src' src=" + playlistAudio[keys[0]] + " type='audio/mp3'>");count = 0; 
+                    $('#my_audio').on('ended', function() { 
+                        count++;  
+                        $("#sound_src").attr("src", playlistAudio[keys[count]])[0];
+                        $("#my_audio").trigger('load');
+                        play_audio('play');
+                    });
+                    function play_audio(task) {
+                        if(task == 'play'){
+                            $("#my_audio").trigger('play');
+                        }
+                        if(task == 'stop'){
+                            $("#my_audio").trigger('pause');
+                            $("#my_audio").prop("currentTime",0);
+                        }
+                    }
+                </script>`;
                 $('#body').html(html);
         }
     });
@@ -1189,7 +1290,7 @@ function showMySong() {
             Authorization: 'Bearer ' + token.token,
         },
         success: (data) => {
-                console.log(data);
+                let playlistAudio = {};
                 let html = ``;
                 if  (data[0] === 'No songs found') {
                     $('#body').html("No songs found");
@@ -1211,8 +1312,18 @@ function showMySong() {
                                 <div class="section-title-wrap">
                                     <h4 class="section-title">My song</h4>
                                 </div>
+                                <div class="container">
+                                    <audio id="my_audio" controls preload="none">
+                                        <source src="" type="audio/mp3">
+                                    </audio>
+                                </div>
+                                <div class="container">
+                                    <button class="btn btn-primary" onclick="play_audio('play')">PLAY</button>
+                                    <button class="btn btn-danger" onclick="play_audio('stop')">STOP</button>
+                                </div>
                             </center>`
                 data[0].map((item) => {
+                    playlistAudio['song_'+item.idSong] = item.sound;
                     html += `<div class="col-lg-6 col-12 mt-4 mb-lg-0">
                                 <div class="custom-block d-flex">
                                     <div class="">
@@ -1379,7 +1490,28 @@ function showMySong() {
                 });
                 html +=`</div>
                     </div>
-                </section>`;
+                </section>
+                <script> 
+                    let playlistAudio = ${JSON.stringify(playlistAudio)};
+                    $("#my_audio").trigger('load');
+                    keys = Object.keys(playlistAudio);
+                    $('#my_audio').append("<source id='sound_src' src=" + playlistAudio[keys[0]] + " type='audio/mp3'>");count = 0; 
+                    $('#my_audio').on('ended', function() { 
+                        count++;  
+                        $("#sound_src").attr("src", playlistAudio[keys[count]])[0];
+                        $("#my_audio").trigger('load');
+                        play_audio('play');
+                    });
+                    function play_audio(task) {
+                        if(task == 'play'){
+                            $("#my_audio").trigger('play');
+                        }
+                        if(task == 'stop'){
+                            $("#my_audio").trigger('pause');
+                            $("#my_audio").prop("currentTime",0);
+                        }
+                    }
+                </script>`;
                 $('#body').html(html);
                 }
         }
