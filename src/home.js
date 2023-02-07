@@ -2107,6 +2107,7 @@ function uploadSoundEdit(e, id) {
 }
 
 function searchSongByName(value) {
+    showHome();
     let token = JSON.parse(localStorage.getItem('token'));
     let name = value.toLowerCase();
     if (name === ``) {
