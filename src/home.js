@@ -186,13 +186,14 @@ function showAlbumDetail(idAlbum) {
     if (token) {
         $.ajax({
             type: "GET",
-            url: `http://localhost:3000/albums/my-album-detail/${idAlbum}`,
+            url: `http://localhost:3000/albums/album-detail/${idAlbum}`,
             headers : {
                 'Content-Type': 'application/json',
                 Authorization: 'Bearer ' + token.token,
             },
             success: (data) => {
                 let playlistAudio = {};
+                let button = ``;
                 if (data[0].length > 0) {
                 let categories = ``;
                 data[1].map((item) => {
@@ -219,6 +220,12 @@ function showAlbumDetail(idAlbum) {
                             </center>`
                 data[0].map((item) => {
                     playlistAudio['song_'+item.idSong] = item.sound;
+                    if (token.role == "user") {
+                        button += `
+                                <button class="badge ms-auto btn" data-bs-toggle="modal" data-bs-target="#editModal${item.idSong}">
+                                    <i class="bi-bookmark"></i>
+                                </button>`
+                    }
                     html += `<div class="col-lg-6 col-12 mt-4 mb-lg-0">
                                 <div class="custom-block d-flex">
                                     <div class="">
@@ -281,9 +288,7 @@ function showAlbumDetail(idAlbum) {
                                             <i class="bi-x"></i>
                                         </button>
 
-                                        <button class="badge ms-auto btn" data-bs-toggle="modal" data-bs-target="#editModal${item.idSong}">
-                                            <i class="bi-bookmark"></i>
-                                        </button>
+                                        ${button}
                                     </div>
                                 </div>
                             </div>
@@ -299,7 +304,7 @@ function showAlbumDetail(idAlbum) {
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-                                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="deleteSong(${item.idSong})">Yes</button>
+                                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="deleteSongInAlbum(${item.idSong})">Yes</button>
                                     </div>
                                     </div>
                                 </div>
@@ -1706,6 +1711,28 @@ function deleteSong(id) {
         },
         success: (data) => {
             alert('Delete song successfully');
+            if (token.role === 'user') {
+                showMySong();
+            }
+            else {
+                showAllSong();
+            }
+        }
+    })
+}
+
+function deleteSongInAlbum(id) {
+    let token = JSON.parse(localStorage.getItem('token'));
+    $.ajax({
+        type: "DELETE",
+        url: `http://localhost:3000/songs/${id}`,
+        headers : {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + token.token,
+        },
+        success: (data) => {
+            alert('Delete song successfully');
+            showHome();
             showAlbumDetail(data);
         }
     })
