@@ -397,7 +397,7 @@ function showAlbumDetail(idAlbum) {
                 'Content-Type': 'application/json',
             },
             success: (data) => {
-                console.log(data);
+                let playlistAudio = {};
                 if (data[0].length > 0) {
                 let html = `
                 <section class="latest-podcast-section section-padding pb-0" id="section_2">
@@ -408,8 +408,18 @@ function showAlbumDetail(idAlbum) {
                                 <div class="section-title-wrap">
                                     <h4 class="section-title">${data[0][0].nameAlbum}</h4>
                                 </div>
+                                <div class="container">
+                                    <audio id="my_audio" controls preload="none">
+                                        <source src="" type="audio/mp3">
+                                    </audio>
+                                </div>
+                                <div class="container">
+                                    <button class="btn btn-primary" onclick="play_audio('play')">PLAY</button>
+                                    <button class="btn btn-danger" onclick="play_audio('stop')">STOP</button>
+                                </div>
                             </center>`
                 data[0].map((item) => {
+                    playlistAudio['song_'+item.idSong] = item.sound;
                     html += `<div class="col-lg-6 col-12 mt-4 mb-lg-0">
                                 <div class="custom-block d-flex">
                                     <div class="">
@@ -472,7 +482,28 @@ function showAlbumDetail(idAlbum) {
 
                 html +=`</div>
                     </div>
-                </section>`;
+                </section>
+                <script> 
+                    let playlistAudio = ${JSON.stringify(playlistAudio)};
+                    $("#my_audio").trigger('load');
+                    keys = Object.keys(playlistAudio);
+                    $('#my_audio').append("<source id='sound_src' src=" + playlistAudio[keys[0]] + " type='audio/mp3'>");count = 0; 
+                    $('#my_audio').on('ended', function() { 
+                        count++;  
+                        $("#sound_src").attr("src", playlistAudio[keys[count]])[0];
+                        $("#my_audio").trigger('load');
+                        play_audio('play');
+                    });
+                    function play_audio(task) {
+                        if(task == 'play'){
+                            $("#my_audio").trigger('play');
+                        }
+                        if(task == 'stop'){
+                            $("#my_audio").trigger('pause');
+                            $("#my_audio").prop("currentTime",0);
+                        }
+                    }
+                </script>`;
                 $('#body').html(html);
             } else {
                 alert('Album have no song');
@@ -1476,7 +1507,7 @@ function showMySong() {
                                                 <span class="input-group-text" id="addon-wrapping">Song</span>
                                                 <input type="file" id="fileButton" onchange="uploadSoundEdit(event, ${item.idSong})" class="form-control" placeholder="Image" aria-label="Username" aria-describedby="addon-wrapping">
                                             </div>
-                                            <div id="soundDiv${item.idSong}"><audio src="${item.sound}"></audio></div>
+                                            <div id="soundDiv${item.idSong}"><audio src="${item.sound}" controls></audio></div>
                                         </div>
                                     </div>
                                     <div class="modal-footer">
@@ -2039,7 +2070,7 @@ function uploadSound(e) {
             }
         }, function () {
             let downloadURL = uploadTask.snapshot.downloadURL;
-            document.getElementById('soundDiv').innerHTML = `<audio src="${downloadURL}"></audio>`
+            document.getElementById('soundDiv').innerHTML = `<audio src="${downloadURL}" controls></audio>`
             localStorage.setItem('sound', downloadURL);
         });
 }
@@ -2101,7 +2132,7 @@ function uploadSoundEdit(e, id) {
             }
         }, function () {
             let downloadURL = uploadTask.snapshot.downloadURL;
-            document.getElementById(`soundDiv${id}`).innerHTML = `<audio src="${downloadURL}"></audio>`;
+            document.getElementById(`soundDiv${id}`).innerHTML = `<audio src="${downloadURL}" controls></audio>`;
             localStorage.setItem('sound', downloadURL);
         });
 }
